@@ -8,7 +8,7 @@ const Dashboard: React.FC = () => {
   const user = useSelector((state: RootState) => state.auth.user);  
 
   return (
-    <div className="flex flex-col items-center justify-center h-screen bg-gray-50">
+    <div className="flex flex-col items-center justify-center h-screen bg-gray-50 text-black">
       <h1 className="text-2xl font-bold mb-4">
         Welcome, {user?.name || "User"}
       </h1>
