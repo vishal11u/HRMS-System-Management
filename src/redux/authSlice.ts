@@ -10,18 +10,15 @@ export const loginUser = createAsyncThunk<
 >("auth/login", async (userData, { rejectWithValue }) => {
   try {
     const response = await loginUsers(userData?.email, userData?.password);
+    console.log(response.status);
 
-    // Handle the response according to the API structure
-    if (response.data?.status === 200) {
-      const { token } = response.data; // The token returned in the API response
+    if (response.status === 200) {
+      const { token } = response.data;
 
-      // Store token in localStorage
       localStorage.setItem("token", token);
 
-      // Decode the token to get user data
       const decoded: User = jwtDecode(token);
 
-      // Return the user and token
       return { user: decoded, token };
     } else {
       return rejectWithValue(response.data?.message || "Login failed");

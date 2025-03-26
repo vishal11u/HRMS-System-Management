@@ -5,7 +5,7 @@ import {
   Navigate,
 } from "react-router-dom";
 import { useSelector } from "react-redux";
-import Login from "./pages/Login";
+import Login from "./components/Login";
 import Dashboard from "./pages/Dashboard";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { RootState } from "./redux/store";  
