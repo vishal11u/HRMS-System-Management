@@ -8,6 +8,8 @@ export interface User {
 export interface AuthState {
   user: User | null;
   token: string | null;
+  isLoggedIn: boolean;
+  roles: string[];
   loading: boolean;
   error: string | null;
 }

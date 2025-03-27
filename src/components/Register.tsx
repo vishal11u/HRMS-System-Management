@@ -1,32 +1,34 @@
 import { useState, FormEvent } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { loginUser } from "../redux/authSlice";
 import { useNavigate } from "react-router-dom";
-import { RootState, AppDispatch } from "../redux/store";
-import { FaUser, FaLock } from "react-icons/fa";
+import { FaUser, FaLock, FaEnvelope, FaEye, FaEyeSlash } from "react-icons/fa";
 import Particles from "react-tsparticles";
 import { loadSlim } from "tsparticles-slim";
-import { toast } from "sonner";
 import { useRegister } from "../context/RegisterContext";
 
-const Login: React.FC = () => {
-  const dispatch = useDispatch<AppDispatch>();
+const Register: React.FC = () => {
   const navigate = useNavigate();
-  const { loading, error } = useSelector((state: RootState) => state.auth);
   const { setIsRegister } = useRegister();
 
   const [username, setUsername] = useState<string>("");
+  const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
+  const [confirmPassword, setConfirmPassword] = useState<string>("");
+  const [showPassword, setShowPassword] = useState<boolean>(false);
+  const [showConfirmPassword, setShowConfirmPassword] =
+    useState<boolean>(false);
+  const [error, setError] = useState("");
 
-  const handleSubmit = async (e: FormEvent) => {
+  const toggleShowPassword = () => setShowPassword(!showPassword);
+  const toggleShowConfirmPassword = () =>
+    setShowConfirmPassword(!showConfirmPassword);
+
+  const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
-    const result = await dispatch(loginUser({ username, password }));
-
-    if (result.meta.requestStatus === "fulfilled") {
-      navigate("/dashboard");
-    } else {
-      toast.error("Invalid Credentials");
+    if (password !== confirmPassword) {
+      setError("Passwords do not match");
+      return;
     }
+    navigate("/login");
   };
 
   return (
@@ -53,57 +55,87 @@ const Login: React.FC = () => {
       />
 
       <div className="relative bg-white shadow-lg rounded-xl p-8 w-96 text-center z-10">
-        <h2 className="text-2xl font-bold text-gray-700 mb-6">HRMS Login</h2>
+        <h2 className="text-2xl font-bold text-gray-700 mb-6">Register</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="relative">
             <FaUser className="absolute left-3 top-3 text-gray-500" />
             <input
-              // type="email"
-              placeholder="Email"
+              type="text"
+              placeholder="Username"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               required
-              disabled={loading}
+              className="border pl-10 p-2 w-full rounded-md focus:ring focus:ring-blue-300"
+            />
+          </div>
+          <div className="relative">
+            <FaEnvelope className="absolute left-3 top-3 text-gray-500" />
+            <input
+              type="email"
+              placeholder="Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
               className="border pl-10 p-2 w-full rounded-md focus:ring focus:ring-blue-300"
             />
           </div>
           <div className="relative">
             <FaLock className="absolute left-3 top-3 text-gray-500" />
             <input
-              type="password"
+              type={showPassword ? "text" : "password"}
               placeholder="Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              disabled={loading}
               className="border pl-10 p-2 w-full rounded-md focus:ring focus:ring-blue-300"
             />
+            <button
+              type="button"
+              className="absolute right-3 top-3 text-gray-500"
+              onClick={toggleShowPassword}
+            >
+              {showPassword ? <FaEyeSlash /> : <FaEye />}
+            </button>
+          </div>
+          <div className="relative">
+            <FaLock className="absolute left-3 top-3 text-gray-500" />
+            <input
+              type={showConfirmPassword ? "text" : "password"}
+              placeholder="Confirm Password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              required
+              className="border pl-10 p-2 w-full rounded-md focus:ring focus:ring-blue-300"
+            />
+            <button
+              type="button"
+              className="absolute right-3 top-3 text-gray-500"
+              onClick={toggleShowConfirmPassword}
+            >
+              {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
+            </button>
           </div>
 
+          {error && <p className="text-red-500">{error}</p>}
           <button
             type="submit"
             className="w-full bg-blue-600 hover:bg-blue-700 text-white p-2 rounded-md font-semibold transition duration-200"
-            disabled={loading}
           >
-            {loading ? "Logging in..." : "Login"}
+            Register
           </button>
         </form>
-        {error && (
-          <p className="text-red-500 mt-4">Invalid Username or Password</p>
-        )}
-
         <div className="mt-4 text-sm">
           <p>
-            Don't have an account?{" "}
+            Already have an account?{" "}
             <button
               type="button"
               onClick={() => {
-                setIsRegister(true);
-                navigate("/register");
+                setIsRegister(false);
+                navigate("/login");
               }}
               className="text-blue-500 font-semibold hover:underline cursor-pointer"
             >
-              Register Here
+              Log in
             </button>
           </p>
         </div>
@@ -112,4 +144,4 @@ const Login: React.FC = () => {
   );
 };
 
-export default Login;
+export default Register;

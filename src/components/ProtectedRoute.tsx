@@ -1,20 +1,21 @@
+import React from "react";
 import { Navigate } from "react-router-dom";
+import { RootState } from "../redux/store";
+import { ProtectedRouteProps } from "../types/protectRoute";
 import { useSelector } from "react-redux";
-import type { RootState } from "../redux/store";  
-import { ProtectedRouteProps } from "../types/protectedroutesTpes";
 
-const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ element, allowedRoles }) => {
-  const { user } = useSelector((state: RootState) => state.auth);
+const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
+  children,
+  allowedRoles,
+}) => {
+  const { isLoggedIn, user } = useSelector((state: RootState) => state.auth);
 
-  if (!user) {
-    return <Navigate to="/" />;
+  if (!isLoggedIn) return <Navigate to="/login" replace />;
+  if (allowedRoles?.length && !allowedRoles.includes(user?.role || "admin")) {
+    return <Navigate to="/unauthorized" replace />;
   }
 
-  if (!allowedRoles.includes(user.role)) {
-    return <Navigate to="/unauthorized" />;
-  }
-
-  return element;
+  return children;
 };
 
-export default ProtectedRoute;
+export default React.memo(ProtectedRoute);

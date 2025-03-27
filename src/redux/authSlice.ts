@@ -1,23 +1,28 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
+import Cookies from "js-cookie";
 import { jwtDecode } from "jwt-decode";
-import { loginUsers } from "../services/loginandrefister";
 import { AuthState, User } from "../types/loginandregisterTypes";
+import { loginUsers } from "../services/loginandrefister";
 
 export const loginUser = createAsyncThunk<
   { user: User; token: string },
-  { email: string; password: string },
+  { username: string; password: string },
   { rejectValue: string }
 >("auth/login", async (userData, { rejectWithValue }) => {
   try {
-    const response = await loginUsers(userData?.email, userData?.password);
-    console.log(response.status);
+    const response = await loginUsers(userData.username, userData.password);
 
-    if (response.status === 200) {
-      const { token } = response.data;
+    if (response.status === 200 || response?.token) {
+      const token = response?.token;
 
-      localStorage.setItem("token", token);
+      Cookies.set("token", token, {
+        expires: 1,
+        secure: true,
+        sameSite: "Strict",
+      });
 
       const decoded: User = jwtDecode(token);
+      localStorage.setItem("user", JSON.stringify(decoded));
 
       return { user: decoded, token };
     } else {
@@ -28,9 +33,19 @@ export const loginUser = createAsyncThunk<
   }
 });
 
+const storedToken = Cookies.get("token") || null;
+const storedUser = storedToken
+  ? JSON.parse(localStorage.getItem("user") || "null")
+  : null;
+
 const initialState: AuthState = {
-  user: JSON.parse(localStorage.getItem("user") || "null"),
-  token: localStorage.getItem("token") || null,
+  isLoggedIn: !!storedUser && !!storedToken,
+  user: storedUser,
+  roles:
+    storedUser && storedToken
+      ? jwtDecode<{ roles: string[] }>(storedToken).roles || []
+      : [],
+  token: storedToken,
   loading: false,
   error: null,
 };
@@ -42,7 +57,9 @@ const authSlice = createSlice({
     logout: (state) => {
       state.user = null;
       state.token = null;
-      localStorage.removeItem("token");
+      state.isLoggedIn = false;
+      state.roles = [];
+      Cookies.remove("token");
       localStorage.removeItem("user");
     },
   },
@@ -58,7 +75,8 @@ const authSlice = createSlice({
           state.loading = false;
           state.user = action.payload.user;
           state.token = action.payload.token;
-          localStorage.setItem("user", JSON.stringify(action.payload.user));
+          state.isLoggedIn = true;
+          state.roles = action.payload.user.roles || [];
         }
       )
       .addCase(

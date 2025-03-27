@@ -4,9 +4,22 @@ import "./index.css";
 import App from "./App.tsx";
 import { Provider } from "react-redux";
 import store from "./redux/store.ts";
+import { Toaster } from "sonner";
+import { BrowserRouter } from "react-router-dom";
+import { RegisterProvider } from "./context/RegisterContext.tsx";
 
 createRoot(document.getElementById("root")!).render(
   <Provider store={store}>
-    <App />
+    <RegisterProvider>
+      <BrowserRouter>
+        <App />
+        <Toaster
+          position="top-right"
+          richColors
+          expand={false}
+          duration={1500}
+        />
+      </BrowserRouter>
+    </RegisterProvider>
   </Provider>
 );

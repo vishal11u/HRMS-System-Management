@@ -1,39 +1,17 @@
-import {
-  BrowserRouter as Router,
-  Routes,
-  Route,
-  Navigate,
-} from "react-router-dom";
 import { useSelector } from "react-redux";
+import { RootState } from "./redux/store";
 import Login from "./components/Login";
-import Dashboard from "./pages/Dashboard";
-import ProtectedRoute from "./components/ProtectedRoute";
-import { RootState } from "./redux/store";  
+import Register from "./components/Register";
+import HRMSDashboard from "./components/HRMSDashboard";
+import { useRegister } from "./context/RegisterContext";
 
 const App: React.FC = () => {
-  const { token } = useSelector((state: RootState) => state.auth); 
+  const { isLoggedIn } = useSelector((state: RootState) => state.auth);
+  const { isRegister } = useRegister();
 
-  return (
-    <Router>
-      <Routes>
-        <Route
-          path="/"
-          element={!token ? <Login /> : <Navigate to="/dashboard" />}
-        />
-        <Route
-          path="/dashboard"
-          element={
-            <ProtectedRoute
-              element={<Dashboard />}
-              allowedRoles={["admin", "teacher", "student"]}
-            />
-          }
-        />
-        <Route path="/unauthorized" element={<h1>Unauthorized Access</h1>} />
-        <Route path="*" element={<h1>404 Page Not Found...</h1>} />
-      </Routes>
-    </Router>
-  );
+  if (isLoggedIn) return <HRMSDashboard />;
+
+  return isRegister ? <Register /> : <Login />;
 };
 
 export default App;

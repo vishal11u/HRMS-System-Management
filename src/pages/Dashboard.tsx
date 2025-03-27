@@ -1,18 +1,23 @@
 import React from "react";
-import { useSelector, useDispatch } from "react-redux";
-import { logout } from "../redux/authSlice";
-import { RootState, AppDispatch } from "../redux/store";  
 
 const Dashboard: React.FC = () => {
-  const dispatch = useDispatch<AppDispatch>(); 
-  const user = useSelector((state: RootState) => state.auth.user);  
-
   return (
-    <div className="flex flex-col items-center justify-center h-screen bg-gray-50">
-      <h1 className="text-2xl font-bold mb-4">
-        Welcome, {user?.name || "User"}
-      </h1>
-      <button onClick={() => dispatch(logout())}>Logout</button>
+    <div>
+      <h1>Dashboard Overview</h1>
+      <div style={{ display: "flex", justifyContent: "space-between" }}>
+        <div
+          style={{ width: "48%", backgroundColor: "#f0f0f0", padding: "20px" }}
+        >
+          <h2>Total Employees</h2>
+          <p>250</p>
+        </div>
+        <div
+          style={{ width: "48%", backgroundColor: "#f0f0f0", padding: "20px" }}
+        >
+          <h2>Open Positions</h2>
+          <p>15</p>
+        </div>
+      </div>
     </div>
   );
 };
