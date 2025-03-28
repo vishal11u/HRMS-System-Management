@@ -23,7 +23,7 @@ const Login: React.FC = () => {
     const result = await dispatch(loginUser({ username, password }));
 
     if (result.meta.requestStatus === "fulfilled") {
-      navigate("/dashboard");
+      navigate("/");
     } else {
       toast.error("Invalid Credentials");
     }
