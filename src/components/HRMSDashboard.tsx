@@ -151,12 +151,9 @@ const HRMSDashboard: React.FC = () => {
           style={{
             background: "#fff",
             padding: "0 16px",
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
           }}
         >
-          <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+          <div style={{ display: "flex", alignItems: "center", float: "right" }} className="md:px-10 gap-x-[24px] md:gap-x-[36px]">
             <Dropdown overlay={notificationMenu} placement="bottomRight">
               <Badge count={2}>
                 <BellOutlined style={{ fontSize: "18px", cursor: "pointer" }} />
