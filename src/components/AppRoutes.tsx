@@ -2,7 +2,6 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { RootState } from "../redux/store";
 import Login from "./Login";
-import Register from "./Register";
 import ProtectedRoute from "./ProtectedRoute";
 import Dashboard from "../pages/Dashboard";
 import EmployeeList from "../pages/EmployeeList";
@@ -23,16 +22,12 @@ const AppRoutes = () => {
         path="/login"
         element={isLoggedIn ? <Navigate to="/" /> : <Login />}
       />
-      <Route
-        path="/register"
-        element={isLoggedIn ? <Navigate to="/" /> : <Register />}
-      />
 
       {/* Protected Routes */}
       <Route
         path="/"
         element={
-          <ProtectedRoute allowedRoles={["admin"]}>
+          <ProtectedRoute allowedRoles={["Super Admin", "Admin", "HR Manager", "Manager", "Employee"]}>
             <Dashboard />
           </ProtectedRoute>
         }
@@ -40,7 +35,7 @@ const AppRoutes = () => {
       <Route
         path="/employee-list"
         element={
-          <ProtectedRoute allowedRoles={["admin"]}>
+          <ProtectedRoute allowedRoles={["Super Admin", "Admin", "HR Manager", "Manager"]}>
             <EmployeeList />
           </ProtectedRoute>
         }
@@ -48,7 +43,7 @@ const AppRoutes = () => {
       <Route
         path="/employee-management"
         element={
-          <ProtectedRoute allowedRoles={["admin"]}>
+          <ProtectedRoute allowedRoles={["Super Admin", "Admin", "HR Manager"]}>
             <EmployeeManagement />
           </ProtectedRoute>
         }
@@ -56,7 +51,7 @@ const AppRoutes = () => {
       <Route
         path="/job-postings"
         element={
-          <ProtectedRoute allowedRoles={["admin"]}>
+          <ProtectedRoute allowedRoles={["Super Admin", "Admin", "HR Manager"]}>
             <JobPostings />
           </ProtectedRoute>
         }
@@ -64,7 +59,7 @@ const AppRoutes = () => {
       <Route
         path="/payroll"
         element={
-          <ProtectedRoute allowedRoles={["admin"]}>
+          <ProtectedRoute allowedRoles={["Super Admin", "Admin", "HR Manager"]}>
             <Payroll />
           </ProtectedRoute>
         }
@@ -72,7 +67,7 @@ const AppRoutes = () => {
       <Route
         path="/settings"
         element={
-          <ProtectedRoute allowedRoles={["admin"]}>
+          <ProtectedRoute allowedRoles={["Super Admin", "Admin"]}>
             <Settings />
           </ProtectedRoute>
         }

@@ -12,4 +12,7 @@ export interface AuthState {
   roles: string[];
   loading: boolean;
   error: string | null;
+  registerSuccess: boolean;
+  registerError: string | null;
+  tokenVerified: boolean;
 }

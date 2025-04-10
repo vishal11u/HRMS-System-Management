@@ -7,25 +7,33 @@ import { FaUser, FaLock } from "react-icons/fa";
 import Particles from "react-tsparticles";
 import { loadSlim } from "tsparticles-slim";
 import { toast } from "sonner";
-import { useRegister } from "../context/RegisterContext";
 
 const Login: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
   const { loading, error } = useSelector((state: RootState) => state.auth);
-  const { setIsRegister } = useRegister();
 
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    const result = await dispatch(loginUser({ username, password }));
 
-    if (result.meta.requestStatus === "fulfilled") {
-      navigate("/");
-    } else {
-      toast.error("Invalid Credentials");
+    const payload = {
+      emailOrUsername: username,
+      password: password,
+    };
+
+    try {
+      const result = await dispatch(loginUser(payload));
+
+      if (result.meta.requestStatus === "fulfilled") {
+        navigate("/");
+      } else {
+        toast.error("Invalid Credentials");
+      }
+    } catch (error) {
+      toast.error("Error logging in");
     }
   };
 
@@ -98,7 +106,6 @@ const Login: React.FC = () => {
             <button
               type="button"
               onClick={() => {
-                setIsRegister(true);
                 navigate("/register");
               }}
               className="text-blue-500 font-semibold hover:underline cursor-pointer"

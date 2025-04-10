@@ -1,17 +1,21 @@
-import { useSelector } from "react-redux";
-import { RootState } from "./redux/store";
+import { useSelector, useDispatch } from "react-redux";
+import { RootState, AppDispatch } from "./redux/store";
 import Login from "./components/Login";
-import Register from "./components/Register";
 import HRMSDashboard from "./components/HRMSDashboard";
-import { useRegister } from "./context/RegisterContext";
+import { useEffect } from "react";
+import { verifyToken } from "./redux/authSlice";
 
 const App: React.FC = () => {
+  const dispatch = useDispatch<AppDispatch>();
   const { isLoggedIn } = useSelector((state: RootState) => state.auth);
-  const { isRegister } = useRegister();
 
-  if (isLoggedIn) return <HRMSDashboard />;
+  useEffect(() => {
+    if (isLoggedIn) {
+      dispatch(verifyToken());
+    }
+  }, [isLoggedIn, dispatch]);
 
-  return isRegister ? <Register /> : <Login />;
+  return isLoggedIn ? <HRMSDashboard /> : <Login />;
 };
 
 export default App;

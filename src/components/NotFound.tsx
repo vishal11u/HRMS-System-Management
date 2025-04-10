@@ -1,6 +1,8 @@
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { RootState } from "../redux/store";
+import { Button } from "antd";
+import { HomeOutlined, LoginOutlined } from "@ant-design/icons";
 
 const NotFound: React.FC = () => {
   const navigate = useNavigate();
@@ -12,14 +14,25 @@ const NotFound: React.FC = () => {
       <p className="text-lg mt-2 text-gray-600">
         Oops! The page you're looking for doesn't exist.
       </p>
-      {!isLoggedIn && (
-        <button
-          onClick={() => navigate("/login")}
-          className="mt-4 px-6 py-2 bg-black text-white rounded-md hover:bg-gray-800 transition"
-        >
-          Go to Login
-        </button>
-      )}
+      <div className="mt-6 flex gap-4">
+        {!isLoggedIn ? (
+          <Button 
+            type="primary" 
+            icon={<LoginOutlined />}
+            onClick={() => navigate("/login")}
+          >
+            Go to Login
+          </Button>
+        ) : (
+          <Button 
+            type="primary" 
+            icon={<HomeOutlined />}
+            onClick={() => navigate("/")}
+          >
+            Go to Dashboard
+          </Button>
+        )}
+      </div>
     </div>
   );
 };

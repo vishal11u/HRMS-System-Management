@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { Layout, Menu, Avatar, Dropdown, Badge } from "antd";
 import {
   DashboardOutlined,
@@ -12,45 +12,11 @@ import {
 } from "@ant-design/icons";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../redux/store";
-import { logout } from "../redux/authSlice";
+import { logout, verifyToken } from "../redux/authSlice";
 import { useNavigate, useLocation } from "react-router-dom";
 import AppRoutes from "./AppRoutes";
 
 const { Header, Sider, Content } = Layout;
-
-const sidebarMenuItems = [
-  {
-    key: "dashboard",
-    icon: <DashboardOutlined />,
-    label: "Dashboard",
-  },
-  {
-    key: "employees",
-    icon: <TeamOutlined />,
-    label: "Employees",
-    children: [
-      { key: "employee-list", label: "Employee List" },
-      { key: "employee-management", label: "Employee Management" },
-    ],
-  },
-  {
-    key: "recruitment",
-    icon: <UserOutlined />,
-    label: "Recruitment",
-    children: [{ key: "job-postings", label: "Job Postings" }],
-  },
-  {
-    key: "payroll",
-    icon: <FileTextOutlined />,
-    label: "Payroll",
-    children: [{ key: "payroll-management", label: "Payroll Management" }],
-  },
-  {
-    key: "settings",
-    icon: <SettingOutlined />,
-    label: "Settings",
-  },
-];
 
 const HRMSDashboard: React.FC = () => {
   const [collapsed, setCollapsed] = useState<boolean>(true);
@@ -59,6 +25,10 @@ const HRMSDashboard: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { user } = useSelector((state: RootState) => state.auth);
+
+  useEffect(() => {
+    dispatch(verifyToken());
+  }, [dispatch, location.pathname]);
 
   const notificationMenu = (
     <Menu>
@@ -112,6 +82,72 @@ const HRMSDashboard: React.FC = () => {
     );
     setSelectedKey(foundKey || "dashboard");
   }, [location.pathname]);
+
+  const sidebarMenuItems = useMemo(() => {
+    const role = user?.role || "";
+    
+    const baseMenuItems = [
+      {
+        key: "dashboard",
+        icon: <DashboardOutlined />,
+        label: "Dashboard",
+      },
+    ];
+    
+    const employeeManagementItems = [
+      {
+        key: "employees",
+        icon: <TeamOutlined />,
+        label: "Employees",
+        children: [
+          { key: "employee-list", label: "Employee List" },
+          { key: "employee-management", label: "Employee Management" },
+        ],
+      },
+    ];
+    
+    const recruitmentItems = [
+      {
+        key: "recruitment",
+        icon: <UserOutlined />,
+        label: "Recruitment",
+        children: [{ key: "job-postings", label: "Job Postings" }],
+      },
+    ];
+    
+    const payrollItems = [
+      {
+        key: "payroll",
+        icon: <FileTextOutlined />,
+        label: "Payroll",
+        children: [{ key: "payroll-management", label: "Payroll Management" }],
+      },
+    ];
+    
+    const settingsItems = [
+      {
+        key: "settings",
+        icon: <SettingOutlined />,
+        label: "Settings",
+      },
+    ];
+    
+    let menuItems = [...baseMenuItems];
+    
+    if (["Super Admin", "Admin", "HR Manager", "Manager"].includes(role)) {
+      menuItems = [...menuItems, ...employeeManagementItems];
+    }
+    
+    if (["Super Admin", "Admin", "HR Manager"].includes(role)) {
+      menuItems = [...menuItems, ...recruitmentItems, ...payrollItems];
+    }
+    
+    if (["Super Admin", "Admin"].includes(role)) {
+      menuItems = [...menuItems, ...settingsItems];
+    }
+    
+    return menuItems;
+  }, [user?.role]);
 
   return (
     <Layout style={{ minHeight: "100vh" }}>
